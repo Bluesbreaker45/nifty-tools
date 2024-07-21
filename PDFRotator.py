@@ -3,13 +3,13 @@ import sys
 
 def rotate(path):
     pdfIn = open(path, 'rb') # exchange the 'original.pdf' with a name of your file 
-    pdfReader = PyPDF2.PdfFileReader(pdfIn)
-    pdfWriter = PyPDF2.PdfFileWriter()
+    pdfReader = PyPDF2.PdfReader(pdfIn)
+    pdfWriter = PyPDF2.PdfWriter()
 
-    for pageNum in range(pdfReader.numPages):
-        page = pdfReader.getPage(pageNum)
-        page.rotateClockwise(90)
-        pdfWriter.addPage(page)
+    for pageNum in range(len(pdfReader.pages)):
+        page = pdfReader.pages[pageNum]
+        page.rotate(90)
+        pdfWriter.add_page(page)
 
     pdfOut = open('rotated.pdf', 'wb')
     pdfWriter.write(pdfOut)

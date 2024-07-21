@@ -11,6 +11,13 @@ def mergePdfs(directory, resultName):
 
   pdfs = filter(lambda x: x.endswith((".pdf")) and x != resultName, os.listdir(directory))
   pdfs = sorted(pdfs, key=extract_name)
+
+  # If you want to control the order manually, specify it in the following list:
+  # pdfs = [
+  #   "1.pdf",
+  #   "2.pdf"
+  # ]
+
   print(len(pdfs))
   print(pdfs)
 

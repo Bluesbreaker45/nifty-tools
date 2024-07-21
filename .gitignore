@@ -2,6 +2,8 @@
 *
 
 # except the following types of files.
+!*/
 !.gitignore
 !*.py
 !*.sh
+!*.TTF
