@@ -36,7 +36,11 @@ content =  """\
 """
 
 def gen_html(url, outputName):
-    files = filter(lambda x: x.endswith((".jpg", ".png", ".jpeg")), os.listdir(url))
+    if any(("viewer.html" in f.name.lower()) for f in os.scandir(url)):
+        return
+    if not any(f.name.lower().endswith((".jpg", ".png", ".jpeg", ".webp")) for f in os.scandir(url)):
+        return
+    files = filter(lambda x: x.lower().endswith((".jpg", ".png", ".jpeg", ".webp")), os.listdir(url))
 
     def extract_name(name):
         f = filter(lambda x: True if x else False, re.split("([0-9]+)|([^0-9]+)", name))
@@ -48,16 +52,34 @@ def gen_html(url, outputName):
     if url[-1] != '/':
         url += '/'
 
+    debugCount = 0
+    printNum = 5
     contentStr = ""
     for file in files:
-        print(file)
-        contentStr += content.format(url + file, url + file)
+        if debugCount < printNum:
+            print(file)
+        elif debugCount == printNum:
+            print("...", end=" ")
+        debugCount += 1
+        contentStr += content.format(file, url + file)
         #contentStr += "<img src=\"" + file + "\" alt=\"" + file + "\" width=800px>\n"
+    if len(files) >= printNum:
+        print(len(files) - printNum, "more pics.")
 
-    html = open(outputName, "w", encoding="UTF-8")
+    html = open(url + outputName, "w", encoding="UTF-8")
     html.write(header + contentStr + tail)
     html.close()
+    print("Add Viewer.html for" + url)
 
+def walkDir(dir, newName):
+    # try:
+    gen_html(dir, newName)
+    # # except:
+    #     pass
+    subfolders = [f.path for f in os.scandir(dir) if f.is_dir()]
+    for f in subfolders:
+        # print(f)
+        walkDir(f, newName)
 
 def main():
     parser = argparse.ArgumentParser(description="Generate HTML for pictures.")
@@ -65,7 +87,7 @@ def main():
     parser.add_argument("-o", dest="newName", metavar="output's_name", default="Viewer.html", help="the name of the output pdf (default: \"viewer.html\")")
 
     args = parser.parse_args()
-    gen_html(args.dir, args.newName)
+    walkDir(args.dir, args.newName)
 
 
 if __name__ == "__main__":
